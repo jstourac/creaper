@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <!-- only to get rid of warnings when generating JavaDoc -->
-            <groupId>com.google.code.cookcc</groupId>
+            <groupId>org.yuanheng.cookcc</groupId>
             <artifactId>cookcc</artifactId>
         </dependency>
         <dependency>

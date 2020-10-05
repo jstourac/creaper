@@ -196,6 +196,19 @@ public class AddSyslogAuditLogOnlineTest extends AbstractElytronOnlineTest {
         checkAttribute(TEST_SYSLOG_AUDIT_LOG_ADDRESS, "host-name", "another-hostname");
     }
 
+//    @Test(expected = IOException.class)
+//    public void addSimpleSyslogAuditLog_noSyslogListener() throws Exception {
+//        //        Assume.assumeTrue(client.version().lessThan(ServerVersion.VERSION_9_0_0));
+//        AddSyslogAuditLog addSyslogAuditLog = new AddSyslogAuditLog.Builder(TEST_SYSLOG_AUDIT_LOG_NAME)
+//                .serverAddress("localhost")
+//                .port(SYSLOG_PORT)
+//                .hostName("Elytron-audit")
+//                .build();
+//
+//        client.apply(addSyslogAuditLog);
+//        fail("Syslog audit log fails since there is nothing listening on the selected address:port tuple, exception should be thrown");
+//    }
+
     @Test(expected = IllegalArgumentException.class)
     public void addSyslogAuditLog_nullName() throws Exception {
         new AddSyslogAuditLog.Builder(null)

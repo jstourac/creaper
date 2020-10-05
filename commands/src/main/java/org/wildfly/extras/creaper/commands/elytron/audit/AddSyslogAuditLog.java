@@ -17,6 +17,7 @@ public final class AddSyslogAuditLog implements OnlineCommand {
     private final AuditFormat format;
     private final String hostName;
     private final String sslContext;
+    private final Integer reconnectAttempts;
     private final boolean replaceExisting;
 
     private AddSyslogAuditLog(Builder builder) {
@@ -26,6 +27,7 @@ public final class AddSyslogAuditLog implements OnlineCommand {
         this.transport = builder.transport;
         this.format = builder.format;
         this.hostName = builder.hostName;
+        this.reconnectAttempts = builder.reconnectAttempts;
         this.replaceExisting = builder.replaceExisting;
         this.sslContext = builder.sslContext;
     }
@@ -43,13 +45,21 @@ public final class AddSyslogAuditLog implements OnlineCommand {
             new Administration(ctx.client).reloadIfRequired();
         }
 
-        ops.add(syslogAuditAddress, Values.empty()
+        if (reconnectAttempts != null && ctx.version.lessThan(ServerVersion.VERSION_10_0_0)) {
+            // TODO - well... this version is shared between wf16 till wf18 so I am not sure here... :/
+            throw new AssertionError("reconnect-attempts attribute is available since WildFly 18");
+        }
+
+        Values attributes = Values.empty()
                 .and("server-address", serverAddress)
                 .and("port", port)
                 .and("host-name", hostName)
+                .andOptional("reconnect-attempts", reconnectAttempts)
                 .andOptional("ssl-context", sslContext)
                 .andOptional("transport", transport == null ? null : transport.name())
-                .andOptional("format", format == null ? null : format.name()));
+                .andOptional("format", format == null ? null : format.name());
+
+        ops.add(syslogAuditAddress, attributes);
     }
 
     public static final class Builder {
@@ -60,6 +70,7 @@ public final class AddSyslogAuditLog implements OnlineCommand {
         private TransportProtocolType transport;
         private String hostName;
         private AuditFormat format;
+        private Integer reconnectAttempts;
         private String sslContext;
         private boolean replaceExisting;
 
@@ -100,6 +111,11 @@ public final class AddSyslogAuditLog implements OnlineCommand {
 
         public Builder sslContext(String sslContext) {
             this.sslContext = sslContext;
+            return this;
+        }
+
+        public Builder reconnectAttempts(Integer reconnectAttempts) {
+            this.reconnectAttempts = reconnectAttempts;
             return this;
         }
 
